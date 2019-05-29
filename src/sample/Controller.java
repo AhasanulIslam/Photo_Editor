@@ -31,6 +31,7 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
 
     public static boolean isCroped = false, isMirrored = false;
+    public static String currState = "";
     File input = null;
     @FXML
     ImageView preview;
@@ -92,7 +93,7 @@ public class Controller implements Initializable {
 
 
         try {
-            preview.setImage(new Image(new FileInputStream("src/resources/sample.jpg")));
+            preview.setImage(new Image(new FileInputStream("src/resources/sampletree.jfif")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -108,6 +109,7 @@ public class Controller implements Initializable {
                             if(value>0) {
                                 Crop img = new Crop(input);
                                 try {
+                                    currState = "1.jpg";
                                     img.crop(value/100);
                                 } catch (IOException e) {
 
@@ -138,9 +140,7 @@ public class Controller implements Initializable {
                         if(input!=null)
                         {
                             double value = brightnessSlider.getValue();
-                            System.out.println("currentVal: " + value);
-                            System.out.println("Min: " + brightnessSlider.getMin());
-                            System.out.println("Max: " + brightnessSlider.getMax());
+                            currState = "brightness.jpg";
                             Brightness img = new Brightness(input);
                             try {
                                 img.bright(value);
@@ -210,27 +210,33 @@ public class Controller implements Initializable {
         }
     }
 
-    public void setSave(ActionEvent event) throws FileNotFoundException {
+    public void setSave(ActionEvent event) throws IOException {
         if(input == null) return;
 
-        File output = null;
         FileChooser fc = new FileChooser();
-        fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Save", "*.jpg", "*.png", "*.jpeg"));
-        List<File> musicListf = fc.showOpenMultipleDialog(null);
-        if (musicListf != null) {
-            for (File f : musicListf) {
-                output = f;
-            }
-        }
+        FileChooser.ExtensionFilter exfilter = new FileChooser.ExtensionFilter("JPG Images(*.jpg)", "*.jpg");
+        fc.getExtensionFilters().add(exfilter);
 
-        if (output != null) {
-            //
-        }
+        File dest = fc.showSaveDialog(null);
+
+       if(dest!=null)
+       {
+           File src = new File(currState);
+
+           FileInputStream fin = new FileInputStream(new File(currState));
+           byte[] ara = fin.readAllBytes();
+           FileOutputStream fout = new FileOutputStream(dest);
+           fout.write(ara);
+
+           fin.close();
+           fout.close();
+       }
     }
 
     public void setGreen(ActionEvent event) throws IOException {
         if (input != null) {
             greenImage img = null;
+            currState = "green.jpg";
 
             if(isMirrored || isCroped)
                 img = new greenImage(new File("1.jpg"));
@@ -247,6 +253,7 @@ public class Controller implements Initializable {
     public void setRed(ActionEvent event) throws IOException, InterruptedException {
         if (input != null) {
             redImage img = null;
+            currState = "red.jpg";
 
             if(isCroped || isMirrored)
                 img = new redImage(new File("1.jpg"));
@@ -263,6 +270,7 @@ public class Controller implements Initializable {
         if (input != null) {
             blueImage img = null;
 
+            currState = "blue.jpg";
             if(isMirrored || isCroped)
                 img = new blueImage(new File("1.jpg"));
             else
@@ -277,6 +285,7 @@ public class Controller implements Initializable {
         if (input != null) {
             grayScale img = null;
 
+            currState = "gray.jpg";
             if(isCroped || isMirrored)
                 img = new grayScale(new File("1.jpg"));
             else
@@ -291,6 +300,7 @@ public class Controller implements Initializable {
     public void setSepia(ActionEvent event) throws IOException, InterruptedException {
         if (input != null) {
             Sapia img = null;
+            currState = "sepia.jpg";
 
             if(isMirrored || isCroped)
                 img = new Sapia(new File("1.jpg"));
@@ -315,6 +325,7 @@ public class Controller implements Initializable {
     public void setMirror(ActionEvent event) throws IOException, InterruptedException {
         if (input != null) {
             Mirror img = null;
+            currState = "1.jpg";
 
             if(isCroped)
                 img = new Mirror(new File("1.jpg"));
@@ -335,6 +346,7 @@ public class Controller implements Initializable {
                 img = new Solarise(new File("1.jpg"));
             else
                 img = new Solarise(input);
+            currState = "solarise.jpg";
 
             img.setSolariseFilter();
             img.solariseFilter();
@@ -353,6 +365,7 @@ public class Controller implements Initializable {
             else
                 ye = new yellowImage(input);
 
+            currState = "yellow.jpg";
             ye.setYellowImageFilter();
             ye.yellowImageFilter();
             preview.setImage(new Image(new FileInputStream("yellow.jpg")));

@@ -40,7 +40,7 @@ public class grayScale {
                 int avg = (r + g + b) / 3;
 
                 //replace RGB value with avg
-                p = (a << 24) | (avg << 16) | (avg << 8) | avg;
+                p = (avg << 24) | (avg << 16) | (avg << 8) | avg;
 
                 img.setRGB(x, y, p);
             }
